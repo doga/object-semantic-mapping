@@ -1,7 +1,11 @@
 import {
+  // N3
   DataFactory, Store, namedNode, literal, defaultGraph, quad,
+  // RDF prefixes
   xsd, rdfs, rdf, schema, cert, foaf, bio, cv, cwrc, country, org, bibo, time, skos, dcterms, cc, prov,
-  qrm, a
+  qrm,
+  // Turtle/TriG shorthand
+  a
 } from '../imports.mjs';
 
 class Person {
