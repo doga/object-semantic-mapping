@@ -21,20 +21,27 @@ class Person {
         store = store.value;
       } else return res;
     }
-
-    for (const quad of store.match(null, a, namedNode(`${foaf}Person`))) {
-      const person = quad.subject;
-      res.push(new Person(person, store));
+    for (const personClass of [`${foaf}Person`, `${schema}Person`]) {
+      for (const quad of store.match(null, a, namedNode(personClass))) {
+        const 
+        person = new Person(quad.subject, store),
+        alreadyAdded = res.find(p => p.id.value === person.id.value);
+        if(!alreadyAdded) res.push(person);
+      }
     }
     return res;
   }
 
   #store;
   #id;
+
   constructor(id, store) {
     this.#id = id;
     this.#store = store;
   }
+
+  get id() {return this.#id;}
+  get store() {return this.#store;}
 
   get names() {
     const res = [];
