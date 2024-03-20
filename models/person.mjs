@@ -5,17 +5,25 @@ import {
 
 import {
   // Prefixes
-  rdf, rdfs, xsd, schema, cert, foaf, bio, cv, cwrc, country, org, bibo, time, skos, dcterms, cc, prov,
-  qrm,
+  rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc, 
+  // cv, country, org, bibo, time, skos, dcterms, cc, cert,
+  // qrm,
+
   // Turtle/TriG shorthand
   a
 } from "../defs.mjs";
 
 import { I18nString } from '../util/i18nString.mjs';
 
+
 class Person {
   /** @type {string[]} */
-  static rdfClasses = [`${foaf}Person`, `${schema}Person`];
+  static personClasses = [`${foaf}Person`, `${schema}Person`, `${cwrc}NaturalPerson`, `${prov}Agent`];
+
+  /** 
+   * @type {(Object.<string, string>|null)} 
+   * */
+  static rdfPrefixes = {rdf, rdfs, xsd, foaf, schema, bio, cwrc, prov};
 
   /** 
    * Reads persons from an in-memory RDF store.
@@ -32,8 +40,9 @@ class Person {
     .filter(store => store);
     
     const res = [];
+    // Read person ids
     for (const store of stores) {
-      for (const personClass of Person.rdfClasses) {
+      for (const personClass of Person.personClasses) {
         for (const quad of store.match(null, a, namedNode(personClass))) {
           if(quad.subject.datatype)continue;
           const
@@ -42,13 +51,13 @@ class Person {
           if (!alreadyAdded) res.push(person);
         }
       }
-        
     }
     return res;
   }
 
   #stores;
 
+  // In-object data
   #id;
   #names;
   #oneLineBios;
@@ -154,29 +163,47 @@ class Person {
   }
 
   /** 
+   * Writes in-object data to a Store.
+   * ⚠️ Does not write the data that is stored in this.stores.
+   * If writing succeeds, then this returns some prefixes used for the named nodes.
    * @param {Store|{value:Store}} store - N3 store or SemanticData
-   * @return {boolean} 
+   * @return {(Object.<string, string>|null)} 
    * */
-  writeTo(store){ // TODO prefixes
+  writeTo(store){
     // console.debug(`writeTo`);
     if(!(store instanceof Store)){
       if (store?.value instanceof Store) {
         store = store.value;
       } else {
-        return false;
+        return null;
       }
     }
     try {
-      for (const rdfClass of Person.rdfClasses) {
+      // rdf:type
+      for (const rdfClass of Person.personClasses) {
         const q = quad(namedNode(this.id),a,namedNode(rdfClass));
-        // console.debug(`writingTo`);
+        store.add(q);
+      }
+      // foaf:name
+      for (const name of this.names) {
+        const q = quad(namedNode(this.id),namedNode(`${foaf}name`),literal(name.value, name.lang?.code639_1));
+        store.add(q);
+      }
+      // bio:olb
+      for (const olb of this.oneLineBios) {
+        const q = quad(namedNode(this.id),namedNode(`${bio}olb`),literal(olb.value, olb.lang?.code639_1));
+        store.add(q);
+      }
+      // foaf:mbox
+      for (const mbox of this.emails) {
+        const q = quad(namedNode(this.id),namedNode(`${foaf}mbox`),namedNode(`mailto:${mbox}`));
         store.add(q);
       }
     } catch (error) {
       console.error(`Error while writing to store: ${error}`);
-      return false;
+      return null;
     }
-    return true;
+    return Person.rdfPrefixes;
   }
 
   toString = () => `${this.id}`;
