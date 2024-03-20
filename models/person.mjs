@@ -111,7 +111,7 @@ class Person {
         res.push(I18nString.fromRdf(quad.object));
       }
     }
-    return res.filter(item => item).concat(this.oneLineBios.filter(item => item instanceof I18nString)); 
+    return res.filter(item => item).concat(this.names.filter(item => item instanceof I18nString)); 
   }
 
   /** 
