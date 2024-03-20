@@ -6,7 +6,7 @@ ORM, but for RDF semantic data.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import { Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.3/mod.mjs";`
+- `import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.3/mod.mjs";`
 
 ## Compatibility
 
