@@ -21,6 +21,10 @@ _Tip (requires Deno): Run the following example in your terminal by typing:_
 
 - `deno run --allow-net --allow-run --allow-env --allow-read https://deno.land/x/mdrb/mod.ts https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md`.
 
+<details data-mdrb>
+<summary>Run the example</summary>
+</details>
+
 ```javascript
 import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
 import { Qworum } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.3.5/mod.mjs";
@@ -71,7 +75,7 @@ function displayPersonData(person) {
 await test();
 ```
 
-Sample output from the code above:
+Sample output for the code above:
 
 ```text
 
