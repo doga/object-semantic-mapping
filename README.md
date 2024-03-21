@@ -19,7 +19,7 @@ Compatible with:
 
 _Tip (requires Deno): Run the following example in your terminal by typing:_
 
-- `deno run --allow-net --allow-run https://deno.land/x/mdrb/mod.ts https://github.com/doga/object-semantic-mapping/blob/main/README.md`.
+- `deno run --allow-net --allow-run --allow-env --allow-read https://deno.land/x/mdrb/mod.ts https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md`.
 
 ```javascript
 import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
