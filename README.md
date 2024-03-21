@@ -17,11 +17,13 @@ Compatible with:
 
 ## Usage
 
-```shell
-$ deno
-> import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
-undefined
-> import { Qworum } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.3.5/mod.mjs";
+_Tip (requires Deno): To run the following example in your terminal, type:_
+
+- `deno run --allow-net --allow-run https://deno.land/x/mdrb/mod.ts https://github.com/doga/object-semantic-mapping/blob/main/README.md`.
+
+```javascript
+import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
+import { Qworum } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.3.5/mod.mjs";
 
 async function test() {
   const turtleFile = new URL('https://qworum.net/data/DoğaArmangil.ttl');
@@ -57,7 +59,6 @@ async function test() {
     console.info(`\nWritten the person to an empty N3 store, which now contains:\n\n${store}`);
   }
   console.info(`\nNote that only the in-object data is written.`);
-
 }
 
 function displayPersonData(person) {
@@ -68,6 +69,11 @@ function displayPersonData(person) {
 }
 
 await test();
+```
+
+Sample output from the code above:
+
+```text
 
 Fetching: https://qworum.net/data/Do%C4%9FaArmangil.ttl
 Found a person in the fetched file.
@@ -101,8 +107,6 @@ SemanticData(<https://qworum.net/data/DoğaArmangil.ttl#id> a <http://xmlns.com/
 )
 
 Note that only the in-object data is written.
-undefined
->
 ```
 
 ∎
