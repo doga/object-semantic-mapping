@@ -6,7 +6,7 @@ ORM, but for RDF semantic data.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";`
+- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";`
 
 ## Compatibility
 
@@ -34,7 +34,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
+import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
 import { Qworum } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.3.5/mod.mjs";
 
 async function test() {
