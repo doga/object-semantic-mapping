@@ -19,7 +19,9 @@ Compatible with:
 
 _Tip (requires Deno): Run the following example by typing this in your terminal:_
 
-- `deno run --allow-net --allow-run --allow-env --allow-read https://deno.land/x/mdrb/mod.ts https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md`.
+```shell
+deno run --allow-net --allow-run --allow-env --allow-read https://deno.land/x/mdrb/mod.ts https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md
+```
 
 <details data-mdrb>
 <summary>Read semantic data from the Web, and manipulate it in-memory.</summary>
