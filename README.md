@@ -17,7 +17,7 @@ Compatible with:
 
 ## Usage
 
-_Tip (requires Deno): To run the following example in your terminal, type:_
+_Tip (requires Deno): Run the following example in your terminal by typing:_
 
 - `deno run --allow-net --allow-run https://deno.land/x/mdrb/mod.ts https://github.com/doga/object-semantic-mapping/blob/main/README.md`.
 
