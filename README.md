@@ -19,62 +19,88 @@ Compatible with:
 
 ```shell
 $ deno
-> import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.4/mod.mjs";
+> import { Language, I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
 undefined
 > import { Qworum } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.3.5/mod.mjs";
 
 async function test() {
+  const turtleFile = new URL('https://qworum.net/data/DoğaArmangil.ttl');
+  console.info(`Fetching: ${turtleFile}`);
   const
-  response = await fetch('https://qworum.net/data/Do%C4%9FaArmangil.ttl'),
+  response = await fetch(turtleFile),
   text     = await response.text(),
   semantic = await Qworum.SemanticData(text),
-  store    = await Qworum.SemanticData(''),
   persons  = Person.read(semantic);
 
   for (const person of persons) {
-    console.info(`Person ID: ${person}`);
-    // console.info(`  name: ${person.names[0]}`);
-    // console.info(`  bio : ${person.oneLineBios[0]}`);
-    person.names.push(new I18nString('Veli', 'tr'));
-    person.emails.push('a@b.com');
-    person.oneLineBios.push(new I18nString('a bio.', 'en'));
-    person.oneLineBios.push(new I18nString('Eine Bio.', 'de'));
-    for (const name of person.allNames) {
-      console.info(`  name:  ${name}`);
-    }
-    for (const bio of person.allOneLineBios) {
-      console.info(`  bio:   ${bio}`);
-    }
-    for (const email of person.allEmails) {
-      console.info(`  email: <${email}>`);
-    }
+    console.info(`Found a person in the fetched file.`);
+    console.info(`\nPerson's data before adding in-object data:`);
+    displayPersonData(person);
+    const
+    store = await Qworum.SemanticData(''),
+    email = 'a@b.com',
+    bio   = [
+      new I18nString('Une bio.', 'fr'),
+      new I18nString('Eine Bio.', 'de')
+    ];
 
-    console.debug(`writing person to empty store...`);
+    console.info(`\nAdding in-object email property to person: ${email}`);
+    person.emails.push(email);
+    console.info(`Adding in-object bio property to person: ${bio[0]}`);
+    person.oneLineBios.push(bio[0]);
+    console.info(`Adding in-object bio property to person: ${bio[1]}`);
+    person.oneLineBios.push(bio[1]);
+    console.info(`\nPerson's data as it exists in-object and in the fetched file:`);
+    displayPersonData(person);
+
     person.writeTo(store);
+    console.info(`\nWritten the person to an empty N3 store, which now contains:\n\n${store}`);
   }
-  console.info(`${store}`);
+  console.info(`\nNote that only the in-object data is written.`);
 
+}
+
+function displayPersonData(person) {
+  console.info(`  ID:   <${person}>`);
+  for (const name of person.allNames) console.info(`  name:  ${name}`);
+  for (const bio of person.allOneLineBios) console.info(`  bio:   ${bio}`);
+  for (const email of person.allEmails) console.info(`  email: <${email}>`);
 }
 
 await test();
 
+Fetching: https://qworum.net/data/Do%C4%9FaArmangil.ttl
+Found a person in the fetched file.
 
-Person ID: https://qworum.net/data/DoğaArmangil.ttl#id
+Person's data before adding in-object data:
+  ID:   <https://qworum.net/data/DoğaArmangil.ttl#id>
   name:  Doğa Armangil
-  name:  a bio.
-  name:  Eine Bio.
   bio:   EPFL software engineer living in Switzerland. Patent author. Business owner in software.
-  bio:   a bio.
+  email: <d.armangil@qworum.net>
+  email: <doga.armangil@alumni.epfl.ch>
+
+Adding in-object email property to person: a@b.com
+Adding in-object bio property to person: Une bio.
+Adding in-object bio property to person: Eine Bio.
+
+Person's data as it exists in-object and in the fetched file:
+  ID:   <https://qworum.net/data/DoğaArmangil.ttl#id>
+  name:  Doğa Armangil
+  bio:   EPFL software engineer living in Switzerland. Patent author. Business owner in software.
+  bio:   Une bio.
   bio:   Eine Bio.
   email: <d.armangil@qworum.net>
   email: <doga.armangil@alumni.epfl.ch>
   email: <a@b.com>
-writing person to empty store...
+
+Written the person to an empty N3 store, which now contains:
+
 SemanticData(<https://qworum.net/data/DoğaArmangil.ttl#id> a <http://xmlns.com/foaf/0.1/Person>, <https://schema.org/Person>, <http://sparql.cwrc.ca/ontologies/cwrc#NaturalPerson>, <http://www.w3.org/ns/prov#Agent>;
-    <http://xmlns.com/foaf/0.1/name> "Veli"@tr;
-    <http://purl.org/vocab/bio/0.1/olb> "a bio."@en, "Eine Bio."@de;
+    <http://purl.org/vocab/bio/0.1/olb> "Une bio."@fr, "Eine Bio."@de;
     <http://xmlns.com/foaf/0.1/mbox> <mailto:a@b.com>.
 )
+
+Note that only the in-object data is written.
 undefined
 >
 ```

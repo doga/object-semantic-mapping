@@ -32,7 +32,7 @@ class Person {
    * @param {number} count - max number of persons to read
    * @return {Person[]} 
    * */
-  static read(stores) {
+  static read(stores) { // TODO Store[] should be Set.<Store> (how does === work on Store?)
     // console.debug(`Person`);
     if(!(stores instanceof Array))stores = [stores];
     stores = stores
@@ -169,7 +169,7 @@ class Person {
    * @param {Store|{value:Store}} store - N3 store or SemanticData
    * @return {(Object.<string, string>|null)} 
    * */
-  writeTo(store){
+  writeTo(store){ // TODO prefix handling
     // console.debug(`writeTo`);
     if(!(store instanceof Store)){
       if (store?.value instanceof Store) {
