@@ -1,29 +1,29 @@
-import {
-  // N3
-  DataFactory, Store, namedNode, literal, defaultGraph, quad,
-} from '../imports.mjs';
 
-import {
+import { I18nString } from '../util/i18nString.mjs';
+
+import { Model } from "./model.mjs";
+const 
+{
+  DataFactory, Store, namedNode, literal, defaultGraph, quad,
+} = Model.N3,
+{
   // Prefixes
   rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc, 
   // cv, country, org, bibo, time, skos, dcterms, cc, cert,
   // qrm,
-
-  // Turtle/TriG shorthand
-  a
-} from "../defs.mjs";
-
-import { I18nString } from '../util/i18nString.mjs';
+} = Model.wellKnownPrefixes,
+a = namedNode(`${rdf}type`);
 
 
-class Person {
+class Person extends Model {
   /** @type {string[]} */
-  static personClasses = [`${foaf}Person`, `${schema}Person`, `${cwrc}NaturalPerson`, `${prov}Agent`];
+  static classes = [`${foaf}Person`, `${schema}Person`, `${cwrc}NaturalPerson`, `${prov}Agent`];
 
   /** 
-   * @type {(Object.<string, string>|null)} 
+   * Prefixes that are used by this model.
+   * @type {Object.<string, string>} 
    * */
-  static rdfPrefixes = {rdf, rdfs, xsd, foaf, schema, bio, cwrc, prov};
+  static prefixes = {rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc, };
 
   /** 
    * Reads persons from an in-memory RDF store.
@@ -32,7 +32,7 @@ class Person {
    * @param {number} count - max number of persons to read
    * @return {Person[]} 
    * */
-  static read(stores) { // TODO Store[] should be Set.<Store> (how does === work on Store?)
+  static read(stores) {
     // console.debug(`Person`);
     if(!(stores instanceof Array))stores = [stores];
     stores = stores
@@ -42,7 +42,7 @@ class Person {
     const res = [];
     // Read person ids
     for (const store of stores) {
-      for (const personClass of Person.personClasses) {
+      for (const personClass of Person.classes) {
         for (const quad of store.match(null, a, namedNode(personClass))) {
           if(quad.subject.datatype)continue;
           const
@@ -55,35 +55,17 @@ class Person {
     return res;
   }
 
-  #stores;
-
   // In-object data
-  #id;
   #names;
   #oneLineBios;
   #emails;
 
   constructor(id, stores) {
-    if(typeof id !== 'string')throw new TypeError('bad id');
-    if(stores && !(stores instanceof Array && stores.every(s => s instanceof Store)))throw new TypeError('bad stores');
-
-    this.#stores = stores ?? [];
-    this.#id     = id;
+    super(id,stores);
     this.#names  = [];
     this.#oneLineBios = [];
     this.#emails = [];
   }
-  
-
-  /** 
-   * @return {Store[]} 
-   * */
-  get stores() { return this.#stores; }
-
-  /** 
-   * @return {string} 
-   * */
-  get id() { return this.#id; }
 
   /** 
    * @return {I18nString[]} 
@@ -107,7 +89,7 @@ class Person {
   get allNames() {
     const res = [];
     for (const store of this.stores) {
-      for (const quad of store.match(this.#id, namedNode(`${foaf}name`), null)) {
+      for (const quad of store.match(this.id, namedNode(`${foaf}name`), null)) {
         res.push(I18nString.fromRdf(quad.object));
       }
     }
@@ -121,7 +103,7 @@ class Person {
   get allOneLineBios() {
     const res = [];
     for (const store of this.stores) {
-      for (const quad of store.match(this.#id, namedNode(`${bio}olb`), null)) {
+      for (const quad of store.match(this.id, namedNode(`${bio}olb`), null)) {
         res.push(I18nString.fromRdf(quad.object));
       }
     }
@@ -135,7 +117,7 @@ class Person {
   get allEmails() {
     const res = [];
     for (const store of this.stores) {
-      for (const quad of store.match(this.#id, namedNode(`${foaf}mbox`), null)) {
+      for (const quad of store.match(this.id, namedNode(`${foaf}mbox`), null)) {
         const mbox = quad.object;
         // console.debug(`Mailbox: ${mbox.value}`);
         if (!mbox.datatype) {
@@ -180,7 +162,7 @@ class Person {
     }
     try {
       // rdf:type
-      for (const rdfClass of Person.personClasses) {
+      for (const rdfClass of Person.classes) {
         const q = quad(namedNode(this.id),a,namedNode(rdfClass));
         store.add(q);
       }
@@ -203,10 +185,10 @@ class Person {
       console.error(`Error while writing to store: ${error}`);
       return null;
     }
-    return Person.rdfPrefixes;
+    return Person.prefixes;
   }
 
-  toString = () => `${this.id}`;
+  // toString = () => `${this.id}`;
 }
 
 export { Person };
