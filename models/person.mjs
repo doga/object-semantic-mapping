@@ -1,19 +1,16 @@
 
-import { I18nString } from '../util/i18nString.mjs';
-
-import { Model } from "./model.mjs";
-const 
-{
-  DataFactory, Store, namedNode, literal, defaultGraph, quad,
-} = Model.N3,
-{
-  // Prefixes
-  rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc, 
+import { 
+  namedNode, literal, quad,
+  Store,
+  SemanticData,
+  I18nString, Model, 
+  rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc,
   // cv, country, org, bibo, time, skos, dcterms, cc, cert,
   // qrm,
-} = Model.wellKnownPrefixes,
-a = namedNode(`${rdf}type`);
+} from '../imports.mjs';
 
+const
+a = namedNode(`${rdf}type`);
 
 class Person extends Model {
   /** @type {string[]} */
@@ -22,37 +19,53 @@ class Person extends Model {
   /** 
    * Prefixes that are used by this model.
    * @type {Object.<string, string>} 
-   * */
-  static prefixes = {rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc, };
+   **/
+  static prefixes = { rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc, };
 
   /** 
    * Reads persons from an in-memory RDF store.
    * Compatible with Qworum's `qworum-for-web-pages` library if it uses the same N3 library version.
-   * @param {(Store|Store[]|{value:Store}|{value:Store}[])} store - store or stores
+   * @param {(SemanticData|SemanticData[])} semanticData
    * @param {number} count - max number of persons to read
    * @return {Person[]} 
-   * */
-  static read(stores) {
-    // console.debug(`Person`);
-    if(!(stores instanceof Array))stores = [stores];
-    stores = stores
-    .map(store => store instanceof Store ? store : (store?.value instanceof Store ? store.value : null))
-    .filter(store => store);
-    
+   **/
+  static read(semanticData, count) {
+    console.info(`aaaaaaa`);
+    if(count){
+      if(typeof count !== 'number')throw new TypeError(`not a count`);
+      count = Math.floor(count);
+      if(count < 1)throw new TypeError(`not a count: ${count}`);
+    }
+    if (!(semanticData instanceof Array)) semanticData = [semanticData];
+    semanticData = semanticData
+      .map(sd => sd instanceof SemanticData ? sd : null)
+      .filter(sd => sd);
+    console.debug(`\nsemanticData.length: ${semanticData.length} .`);
+
+    let readCount = 0;
     const res = [];
     // Read person ids
-    for (const store of stores) {
+    for (const sd of semanticData) {
+      const store = sd.value;
       for (const personClass of Person.classes) {
         for (const quad of store.match(null, a, namedNode(personClass))) {
-          if(quad.subject.datatype)continue;
+          if (quad.subject.datatype) continue;
           const
-          person       = new Person(quad.subject.value, stores),
+          person       = new Person(quad.subject.value, semanticData),
           alreadyAdded = res.find(p => p.id === person.id);
-          if (!alreadyAdded) res.push(person);
+          if (!alreadyAdded) {
+            res.push(person);
+            readCount++;
+            if(count && count === readCount)return res;
+          }
         }
       }
     }
     return res;
+  }
+
+  static readOne(semanticData) {
+    return Person.read(semanticData, 1);
   }
 
   // In-object data
@@ -61,62 +74,65 @@ class Person extends Model {
   #emails;
 
   constructor(id, stores) {
-    super(id,stores);
-    this.#names  = [];
+    super(id, stores);
+    this.#names       = [];
     this.#oneLineBios = [];
-    this.#emails = [];
+    this.#emails      = new Set();
   }
 
   /** 
    * @return {I18nString[]} 
-   * */
+   **/
   get names() { return this.#names; }
 
   /** 
    * @return {I18nString[]} 
-   * */
+   **/
   get oneLineBios() { return this.#oneLineBios; }
 
   /** 
-   * @return {string[]} 
-   * */
+   * @return {Set.<string>} 
+   **/
   get emails() { return this.#emails; }
 
   /** 
    * Does a real-time search in all stores, in addition to returning the in-object data.
    * @return {I18nString[]} 
-   * */
+   **/
   get allNames() {
     const res = [];
-    for (const store of this.stores) {
+    for (const sd of this.semanticData) {
+      const store = sd.value;
       for (const quad of store.match(this.id, namedNode(`${foaf}name`), null)) {
         res.push(I18nString.fromRdf(quad.object));
       }
     }
-    return res.filter(item => item).concat(this.names.filter(item => item instanceof I18nString)); 
+    return res.filter(item => item).concat(this.names.filter(item => item instanceof I18nString));
   }
 
   /** 
    * Does a real-time search in all stores, in addition to returning the in-object data.
    * @return {I18nString[]} 
-   * */
+   **/
   get allOneLineBios() {
     const res = [];
-    for (const store of this.stores) {
+    for (const sd of this.semanticData) {
+      const store = sd.value;
       for (const quad of store.match(this.id, namedNode(`${bio}olb`), null)) {
         res.push(I18nString.fromRdf(quad.object));
       }
     }
-    return res.filter(item => item).concat(this.oneLineBios.filter(item => item instanceof I18nString)); 
+    return res.filter(item => item).concat(this.oneLineBios.filter(item => item instanceof I18nString));
   }
 
   /** 
    * Does a real-time search in all stores, in addition to returning the in-object data.
    * @return {string[]} 
-   * */
+   **/
   get allEmails() {
     const res = [];
-    for (const store of this.stores) {
+    for (const sd of this.semanticData) {
+      const store = sd.value;
       for (const quad of store.match(this.id, namedNode(`${foaf}mbox`), null)) {
         const mbox = quad.object;
         // console.debug(`Mailbox: ${mbox.value}`);
@@ -141,7 +157,7 @@ class Person extends Model {
         }
       }
     }
-    return res.concat(this.emails.filter(item => typeof item === 'string')); 
+    return res.concat(this.emails.filter(item => typeof item === 'string'));
   }
 
   /** 
@@ -150,10 +166,10 @@ class Person extends Model {
    * If writing succeeds, then this returns some prefixes used for the named nodes.
    * @param {Store|{value:Store}} store - N3 store or SemanticData
    * @return {(Object.<string, string>|null)} 
-   * */
-  writeTo(store){ // TODO prefix handling
+   **/
+  writeTo(store) { // TODO prefix handling
     // console.debug(`writeTo`);
-    if(!(store instanceof Store)){
+    if (!(store instanceof Store)) {
       if (store?.value instanceof Store) {
         store = store.value;
       } else {
@@ -163,22 +179,22 @@ class Person extends Model {
     try {
       // rdf:type
       for (const rdfClass of Person.classes) {
-        const q = quad(namedNode(this.id),a,namedNode(rdfClass));
+        const q = quad(namedNode(this.id), a, namedNode(rdfClass));
         store.add(q);
       }
       // foaf:name
       for (const name of this.names) {
-        const q = quad(namedNode(this.id),namedNode(`${foaf}name`),literal(name.value, name.lang?.code639_1));
+        const q = quad(namedNode(this.id), namedNode(`${foaf}name`), literal(name.value, name.lang?.code639_1));
         store.add(q);
       }
       // bio:olb
       for (const olb of this.oneLineBios) {
-        const q = quad(namedNode(this.id),namedNode(`${bio}olb`),literal(olb.value, olb.lang?.code639_1));
+        const q = quad(namedNode(this.id), namedNode(`${bio}olb`), literal(olb.value, olb.lang?.code639_1));
         store.add(q);
       }
       // foaf:mbox
       for (const mbox of this.emails) {
-        const q = quad(namedNode(this.id),namedNode(`${foaf}mbox`),namedNode(`mailto:${mbox}`));
+        const q = quad(namedNode(this.id), namedNode(`${foaf}mbox`), namedNode(`mailto:${mbox}`));
         store.add(q);
       }
     } catch (error) {

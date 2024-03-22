@@ -17,7 +17,7 @@ Compatible with:
 
 ## Usage
 
-_Tip (requires Deno): Run the following example by typing this in your terminal:_
+_Tip: Run the following example by typing this in your terminal (requires Deno):_
 
 ```shell
 deno run --allow-net --allow-run --allow-env --allow-read https://deno.land/x/mdrb/mod.ts https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md
@@ -34,8 +34,9 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.1.5/mod.mjs";
-import { Qworum } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.3.5/mod.mjs";
+import { Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.0/mod.mjs";
+import { QworumScript } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.4.0/mod.mjs";
+const SemanticData = QworumScript.SemanticData.build;
 
 async function test() {
   const turtleFile = new URL('https://qworum.net/data/DoğaArmangil.ttl');
@@ -43,15 +44,24 @@ async function test() {
   const
   response = await fetch(turtleFile),
   text     = await response.text(),
-  semantic = await Qworum.SemanticData(text),
-  persons  = Person.read(semantic);
+  sd       = SemanticData();
+  // console.debug(`sd: ${sd.toRawString()}`);
+  // console.debug(`𝑻𝑬𝑿𝑻:\n${text}`);
+
+
+  await sd.readFromText(text);
+  // console.debug(`𝑺𝑫:\n${sd.toRawString()}`);
+  console.debug(`jjjjjjjj.`);
+  const persons  = Person.readOne(sd);
+  console.debug(`pppppppp.`);
+  console.debug(`\n${persons.length} persons found.`);
 
   for (const person of persons) {
     console.info(`Found a person in the fetched file.`);
     console.info(`\nPerson's data before adding in-object data:`);
     displayPersonData(person);
     const
-    store = await Qworum.SemanticData(''),
+    store = await Qworum.SemanticData(),
     email = 'a@b.com',
     bio   = [
       new I18nString('Une bio.', 'fr'),
@@ -68,9 +78,9 @@ async function test() {
     displayPersonData(person);
 
     person.writeTo(store);
-    console.info(`\nWritten the person to an empty N3 store, which now contains:\n\n${store}`);
+    console.info(`\n𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑷𝑬𝑹𝑺𝑶𝑵 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑵3 𝑺𝑻𝑶𝑹𝑬, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:\n\n${store}`);
   }
-  console.info(`\nNote that only the in-object data is written.`);
+  // console.info(`\nNote that only the in-object data is written.`);
 }
 
 function displayPersonData(person) {
