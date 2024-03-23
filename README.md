@@ -1,6 +1,13 @@
 # object-semantic-mapping
 
-ORM, but for RDF semantic data.
+When providing [Qworum](https://qworum.net) APIs that receive or return [semantic data](https://en.wikipedia.org/wiki/Semantic_Web), it is a good idea to provide an OSM (object-semantic mapping) library at the same time, or better yet, reuse an existing OSM.
+
+Why Qworum API providers may wish to provide an OSM:
+
+- implementing Qworum APIs becomes much easier.
+- consuming Qworum APIs becomes much easier.
+
+This repo can be used as a template for OSM authors.
 
 ## How to import this library into your frontend code
 
@@ -8,14 +15,7 @@ This library is an ECMAScript module that does not have any dependencies. Import
 
 - `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.3/mod.mjs";`
 
-## Compatibility
-
-Compatible with:
-
-- N3 Stores created with [N3@1.17.2](https://github.com/doga/N3)
-- Semantic data objects created with [qworum-for-web-pages@1.3.5](https://github.com/doga/qworum-for-web-pages)
-
-## Usage
+## Usage example
 
 _Tip: Run the following example by typing this in your terminal (requires Deno):_
 
