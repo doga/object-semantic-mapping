@@ -29,7 +29,8 @@ class Person extends Model {
    * @param {number} count - max number of persons to read
    * @return {Person[]} 
    **/
-  static read(semanticData, count) {
+  static readFrom(semanticData, count) {
+    // console.debug(`Person.read`);
     if(count){
       if(typeof count !== 'number')throw new TypeError(`not a count`);
       count = Math.floor(count);
@@ -39,27 +40,34 @@ class Person extends Model {
     semanticData = semanticData
       .map(sd => sd instanceof SemanticData ? sd : null)
       .filter(sd => sd);
+    // console.debug(`#sd: ${semanticData.length}`);
 
     let readCount = 0;
-    const res = [];
+    const persons = [];
     // Read person ids
     for (const sd of semanticData) {
       const store = sd.value;
       for (const personClass of Person.classes) {
         for (const quad of store.match(null, a, namedNode(personClass))) {
-          if (quad.subject.datatype) continue;
+          if (quad.subject.datatype) continue; // ignore literals
+          // console.debug(`found person id: ${quad.subject.value}`);
           const
-          person       = new Person(quad.subject.value, semanticData),
-          alreadyAdded = res.find(p => p.id === person.id);
+          id           = quad.subject.value,
+          person       = new Person(id, semanticData),
+          alreadyAdded = persons.find(p => p.isSameAs(person));
+
+          // console.debug(`found person.id: ${person.id} (type: ${typeof id})`);
+          // console.debug(`found person id: ${id} (type: ${typeof id})`);
+          // console.debug(`was already added: ${alreadyAdded}`);
           if (!alreadyAdded) {
-            res.push(person);
+            persons.push(person);
             readCount++;
-            if(count && count === readCount)return res;
+            if(count && count === readCount)return persons;
           }
         }
       }
     }
-    return res;
+    return persons;
   }
 
   static readOne(semanticData) {
@@ -71,8 +79,8 @@ class Person extends Model {
   #oneLineBios;
   #emails;
 
-  constructor(id, stores) {
-    super(id, stores);
+  constructor(id, semanticData) {
+    super(id, semanticData);
     this.#names       = [];
     this.#oneLineBios = [];
     this.#emails      = [];// new Set();
@@ -101,8 +109,10 @@ class Person extends Model {
     const res = [];
     for (const sd of this.semanticData) {
       const store = sd.value;
-      for (const quad of store.match(this.id, namedNode(`${foaf}name`), null)) {
-        res.push(I18nString.fromRdf(quad.object));
+      for (const id of this.idsArray) {
+        for (const quad of store.match(id, namedNode(`${foaf}name`), null)) {
+          res.push(I18nString.fromRdf(quad.object));
+        }
       }
     }
     return res.filter(item => item).concat(this.names.filter(item => item instanceof I18nString));
@@ -116,8 +126,10 @@ class Person extends Model {
     const res = [];
     for (const sd of this.semanticData) {
       const store = sd.value;
-      for (const quad of store.match(this.id, namedNode(`${bio}olb`), null)) {
-        res.push(I18nString.fromRdf(quad.object));
+      for (const id of this.idsArray) {
+        for (const quad of store.match(id, namedNode(`${bio}olb`), null)) {
+          res.push(I18nString.fromRdf(quad.object));
+        }
       }
     }
     return res.filter(item => item).concat(this.oneLineBios.filter(item => item instanceof I18nString));
@@ -131,26 +143,28 @@ class Person extends Model {
     const res = [];
     for (const sd of this.semanticData) {
       const store = sd.value;
-      for (const quad of store.match(this.id, namedNode(`${foaf}mbox`), null)) {
-        const mbox = quad.object;
-        // console.debug(`Mailbox: ${mbox.value}`);
-        if (!mbox.datatype) {
-          // mbox is a namedNode
-          try {
-            const
-            url      = new URL(mbox.value),
-            protocol = url.protocol,
-            email    = url.pathname.trim();
-            if (protocol === 'mailto:' && email.length >= 3 && email.indexOf('@') >= 1) { // TODO better email address format verification
-              res.push(email);
+      for (const id of this.idsArray) {
+        for (const quad of store.match(id, namedNode(`${foaf}mbox`), null)) {
+          const mbox = quad.object;
+          // console.debug(`Mailbox: ${mbox.value}`);
+          if (!mbox.datatype) {
+            // mbox is a namedNode
+            try {
+              const
+              url      = new URL(mbox.value),
+              protocol = url.protocol,
+              email    = url.pathname.trim();
+              if (protocol === 'mailto:' && email.length >= 3 && email.indexOf('@') >= 1) { // TODO better email address format verification
+                res.push(email);
+              }
+            } catch (error) {
+              console.error(`Error while parsing email address: ${error}`);
             }
-          } catch (error) {
-            console.error(`Error while parsing email address: ${error}`);
+          } else if (mbox.datatype.value === `${rdf}langString`) {
+            res.push(mbox.value);
+          } else {
+            console.error(`Bad email address: ${mbox.value}`);
           }
-        } else if (mbox.datatype.value === `${rdf}langString`) {
-          res.push(mbox.value);
-        } else {
-          console.error(`Bad email address: ${mbox.value}`);
         }
       }
     }
@@ -168,8 +182,8 @@ class Person extends Model {
     // console.debug(`writeTo`);
     if (!(semanticData instanceof SemanticData))return;
     try {
-      for (const id of this.ids) {
-        console.debug(`id: ${id}`);
+      for (const id of this.idsArray) {
+        // console.debug(`id: ${id}`);
         // rdf:type
         for (const rdfClass of Person.classes) {
           const q = quad(namedNode(id), a, namedNode(rdfClass));
@@ -200,7 +214,7 @@ class Person extends Model {
     }
   }
 
-  // toString = () => `${id}`;
+  toString = () => `${this.ids}`;
 }
 
 export { Person };

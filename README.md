@@ -6,7 +6,7 @@ ORM, but for RDF semantic data.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.1/mod.mjs";`
+- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.2/mod.mjs";`
 
 ## Compatibility
 
@@ -34,56 +34,55 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.1/mod.mjs";
-import { QworumScript, I18nString } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.4.0/mod.mjs";
-const SemanticData = QworumScript.SemanticData.build;
+import { Person, SemanticData, I18nString } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.2/mod.mjs";
 
-async function test() {
-  const turtleFile = new URL('https://qworum.net/data/DoğaArmangil.ttl');
-  console.info(`Fetching: ${turtleFile}`);
-
+async function demo() {
   const
-  response = await fetch(turtleFile),
-  text     = await response.text(),
-  sd       = SemanticData();
+  urls = [
+    new URL('https://qworum.net/data/DoğaArmangil.ttl'),
+    new URL('https://www.w3.org/People/Berners-Lee/card')
+  ],
+  sd = new SemanticData();
 
-  await sd.readFromText(text);
-  const persons = Person.readOne(sd);
+  // Read files
+  for (const url of urls) {
+    console.info(`Fetching: ${url}`);
+    try {
+      await sd.readFromUrl(url);
+    } catch (error) {}
+  }
 
+  // Read persons in files
+  const 
+  persons = Person.readFrom(sd),
+  sd2     = new SemanticData(),
+  bio     = new I18nString('Une bio.', 'fr');
+
+  console.info(`Found ${persons.length} persons in total.`);
   for (const person of persons) {
-    console.info(`Found a person with following data on file:`);
+    console.info(`\nFound a person with following data on file:`);
     displayPersonData(person);
-    const
-    sd2 = SemanticData(),
-    email = 'a@b.com',
-    bio   = [
-      new I18nString('Une bio.', 'fr'),
-      new I18nString('Eine Bio.', 'de')
-    ];
-
-    console.info(`\nAdding in-object email property to person: ${email}`);
-    person.emails.push(email);
-    console.info(`Adding in-object bio property to person: ${bio[0]}`);
-    person.oneLineBios.push(bio[0]);
-    console.info(`Adding in-object bio property to person: ${bio[1]}`);
-    person.oneLineBios.push(bio[1]);
-    console.info(`\nPerson's data as it exists in-object and in the fetched file:`);
+    console.info(`\nAdding in-object bio property to person: ${bio}`);
+    person.oneLineBios.push(bio);
+    console.info(`\nPerson's data as it exists in-object and in the fetched files:`);
     displayPersonData(person);
 
     person.writeTo(sd2);
-    console.info(`\n𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑼𝑷𝑫𝑨𝑻𝑬𝑫 𝑷𝑬𝑹𝑺𝑶𝑵 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑺𝑬𝑴𝑨𝑵𝑻𝑰𝑪 𝑫𝑨𝑻𝑨 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑬𝑹, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:\n\n${sd2}`);
   }
+  console.info(`\n𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑼𝑷𝑫𝑨𝑻𝑬𝑫 𝑷𝑬𝑹𝑺𝑶𝑵𝑺 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑺𝑬𝑴𝑨𝑵𝑻𝑰𝑪 𝑫𝑨𝑻𝑨 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑬𝑹, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:\n\n${sd2}`);
   console.info(`\n𝘕𝘰𝘵𝘦: 𝘰𝘯𝘭𝘺 𝘵𝘩𝘦 𝘪𝘯-𝘰𝘣𝘫𝘦𝘤𝘵 𝘥𝘢𝘵𝘢 𝘪𝘴 𝘸𝘳𝘪𝘵𝘵𝘦𝘯.`);
 }
 
 function displayPersonData(person) {
-  console.info(`  ID:   <${person}>`);
+  for (const id of person.idsArray) {
+    console.info(`  ID:    <${id}>`);
+  }
   for (const name of person.allNames) console.info(`  name:  ${name}`);
   for (const bio of person.allOneLineBios) console.info(`  bio:   ${bio}`);
   for (const email of person.allEmails) console.info(`  email: <${email}>`);
 }
 
-await test();
+await demo();
 ```
 
 Sample output for the code above:
