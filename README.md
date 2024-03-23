@@ -19,7 +19,7 @@ This library is an ECMAScript module that does not have any dependencies. Import
 
 ## Usage example
 
-_Tip: Run the following example by typing this in your terminal (requires Deno):_
+_Tip: Run the example below by typing this in your terminal (requires Deno):_
 
 ```shell
 deno run \
