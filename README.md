@@ -34,34 +34,27 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.0/mod.mjs";
-import { QworumScript } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.4.0/mod.mjs";
+import { Person } from "./mod.mjs";
+import { QworumScript, I18nString } from "https://esm.sh/gh/doga/qworum-for-web-pages@1.4.0/mod.mjs";
 const SemanticData = QworumScript.SemanticData.build;
 
 async function test() {
   const turtleFile = new URL('https://qworum.net/data/DoğaArmangil.ttl');
   console.info(`Fetching: ${turtleFile}`);
+
   const
   response = await fetch(turtleFile),
   text     = await response.text(),
   sd       = SemanticData();
-  // console.debug(`sd: ${sd.toRawString()}`);
-  // console.debug(`𝑻𝑬𝑿𝑻:\n${text}`);
-
 
   await sd.readFromText(text);
-  // console.debug(`𝑺𝑫:\n${sd.toRawString()}`);
-  console.debug(`jjjjjjjj.`);
-  const persons  = Person.readOne(sd);
-  console.debug(`pppppppp.`);
-  console.debug(`\n${persons.length} persons found.`);
+  const persons = Person.readOne(sd);
 
   for (const person of persons) {
-    console.info(`Found a person in the fetched file.`);
-    console.info(`\nPerson's data before adding in-object data:`);
+    console.info(`Found a person with following data on file:`);
     displayPersonData(person);
     const
-    store = await Qworum.SemanticData(),
+    sd2 = SemanticData(),
     email = 'a@b.com',
     bio   = [
       new I18nString('Une bio.', 'fr'),
@@ -77,10 +70,10 @@ async function test() {
     console.info(`\nPerson's data as it exists in-object and in the fetched file:`);
     displayPersonData(person);
 
-    person.writeTo(store);
-    console.info(`\n𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑷𝑬𝑹𝑺𝑶𝑵 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑵3 𝑺𝑻𝑶𝑹𝑬, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:\n\n${store}`);
+    person.writeTo(sd2);
+    console.info(`\n𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑼𝑷𝑫𝑨𝑻𝑬𝑫 𝑷𝑬𝑹𝑺𝑶𝑵 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑺𝑬𝑴𝑨𝑵𝑻𝑰𝑪 𝑫𝑨𝑻𝑨 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑬𝑹, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:\n\n${sd2}`);
   }
-  // console.info(`\nNote that only the in-object data is written.`);
+  console.info(`\n𝘕𝘰𝘵𝘦: 𝘰𝘯𝘭𝘺 𝘵𝘩𝘦 𝘪𝘯-𝘰𝘣𝘫𝘦𝘤𝘵 𝘥𝘢𝘵𝘢 𝘪𝘴 𝘸𝘳𝘪𝘵𝘵𝘦𝘯.`);
 }
 
 function displayPersonData(person) {

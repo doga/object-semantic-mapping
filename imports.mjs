@@ -7,7 +7,7 @@ import {
 const 
 { DataFactory } = N3,
 { namedNode, literal, defaultGraph, quad } = DataFactory,
-Store = N3.Store(),
+Store = N3.Store,
 {
   rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc,
   cv, country, org, bibo, time, skos, dcterms, cc, cert,

@@ -30,7 +30,6 @@ class Person extends Model {
    * @return {Person[]} 
    **/
   static read(semanticData, count) {
-    console.info(`aaaaaaa`);
     if(count){
       if(typeof count !== 'number')throw new TypeError(`not a count`);
       count = Math.floor(count);
@@ -40,7 +39,6 @@ class Person extends Model {
     semanticData = semanticData
       .map(sd => sd instanceof SemanticData ? sd : null)
       .filter(sd => sd);
-    console.debug(`\nsemanticData.length: ${semanticData.length} .`);
 
     let readCount = 0;
     const res = [];
@@ -77,7 +75,7 @@ class Person extends Model {
     super(id, stores);
     this.#names       = [];
     this.#oneLineBios = [];
-    this.#emails      = new Set();
+    this.#emails      = [];// new Set();
   }
 
   /** 
@@ -140,10 +138,9 @@ class Person extends Model {
           // mbox is a namedNode
           try {
             const
-              url = new URL(mbox.value),
-              protocol = url.protocol,
-              email = url.pathname.trim()
-              ;
+            url      = new URL(mbox.value),
+            protocol = url.protocol,
+            email    = url.pathname.trim();
             if (protocol === 'mailto:' && email.length >= 3 && email.indexOf('@') >= 1) { // TODO better email address format verification
               res.push(email);
             }
@@ -162,49 +159,45 @@ class Person extends Model {
 
   /** 
    * Writes in-object data to a Store.
-   * ⚠️ Does not write the data that is stored in this.stores.
+   * ⚠️ Does not write the data that is stored in this.semanticData.
    * If writing succeeds, then this returns some prefixes used for the named nodes.
-   * @param {Store|{value:Store}} store - N3 store or SemanticData
-   * @return {(Object.<string, string>|null)} 
+   * @param {SemanticData} semanticData
+   * @return {void} 
    **/
-  writeTo(store) { // TODO prefix handling
+  writeTo(semanticData) {
     // console.debug(`writeTo`);
-    if (!(store instanceof Store)) {
-      if (store?.value instanceof Store) {
-        store = store.value;
-      } else {
-        return null;
-      }
-    }
+    if (!(semanticData instanceof SemanticData))return;
     try {
-      // rdf:type
-      for (const rdfClass of Person.classes) {
-        const q = quad(namedNode(this.id), a, namedNode(rdfClass));
-        store.add(q);
-      }
-      // foaf:name
-      for (const name of this.names) {
-        const q = quad(namedNode(this.id), namedNode(`${foaf}name`), literal(name.value, name.lang?.code639_1));
-        store.add(q);
-      }
-      // bio:olb
-      for (const olb of this.oneLineBios) {
-        const q = quad(namedNode(this.id), namedNode(`${bio}olb`), literal(olb.value, olb.lang?.code639_1));
-        store.add(q);
-      }
-      // foaf:mbox
-      for (const mbox of this.emails) {
-        const q = quad(namedNode(this.id), namedNode(`${foaf}mbox`), namedNode(`mailto:${mbox}`));
-        store.add(q);
+      for (const id of this.ids) {
+        console.debug(`id: ${id}`);
+        // rdf:type
+        for (const rdfClass of Person.classes) {
+          const q = quad(namedNode(id), a, namedNode(rdfClass));
+          semanticData.value.add(q);
+        }
+        // foaf:name
+        for (const name of this.names) {
+          const q = quad(namedNode(id), namedNode(`${foaf}name`), literal(name.value, name.lang?.code639_1));
+          semanticData.value.add(q);
+        }
+        // bio:olb
+        for (const olb of this.oneLineBios) {
+          const q = quad(namedNode(id), namedNode(`${bio}olb`), literal(olb.value, olb.lang?.code639_1));
+          semanticData.value.add(q);
+        }
+        // foaf:mbox
+        for (const mbox of this.emails) {
+          const q = quad(namedNode(id), namedNode(`${foaf}mbox`), namedNode(`mailto:${mbox}`));
+          semanticData.value.add(q);
+        }
       }
     } catch (error) {
       console.error(`Error while writing to store: ${error}`);
       return null;
     }
-    return Person.prefixes;
   }
 
-  // toString = () => `${this.id}`;
+  // toString = () => `${id}`;
 }
 
 export { Person };
