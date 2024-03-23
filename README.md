@@ -22,7 +22,11 @@ This library is an ECMAScript module that does not have any dependencies. Import
 _Tip: Run the following example by typing this in your terminal (requires Deno):_
 
 ```shell
-deno run --allow-net --allow-run --allow-env --allow-read https://deno.land/x/mdrb/mod.ts https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md
+deno run \
+  --allow-net --allow-run --allow-env --allow-read \
+  https://deno.land/x/mdrb/mod.ts \
+  --dax=false --mode=isolated \
+  https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md
 ```
 
 <details data-mdrb>
