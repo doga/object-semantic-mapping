@@ -175,6 +175,9 @@ class Person extends Model {
           const q = quad(namedNode(id), a, namedNode(rdfClass));
           semanticData.value.add(q);
         }
+
+        // TODO write these for the first ID only, then add a schema:sameAs property to the first ID for all other IDs:
+
         // foaf:name
         for (const name of this.names) {
           const q = quad(namedNode(id), namedNode(`${foaf}name`), literal(name.value, name.lang?.code639_1));
