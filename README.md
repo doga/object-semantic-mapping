@@ -88,39 +88,49 @@ await demo();
 Sample output for the code above:
 
 ```text
-
 Fetching: https://qworum.net/data/Do%C4%9FaArmangil.ttl
-Found a person in the fetched file.
+Fetching: https://www.w3.org/People/Berners-Lee/card
+Found 2 persons in total.
 
-Person's data before adding in-object data:
-  ID:   <https://qworum.net/data/DoğaArmangil.ttl#id>
+Found a person with following data on file:
+  ID:    <https://qworum.net/data/DoğaArmangil.ttl#id>
   name:  Doğa Armangil
   bio:   EPFL software engineer living in Switzerland. Patent author. Business owner in software.
   email: <d.armangil@qworum.net>
   email: <doga.armangil@alumni.epfl.ch>
 
-Adding in-object email property to person: a@b.com
 Adding in-object bio property to person: Une bio.
-Adding in-object bio property to person: Eine Bio.
 
-Person's data as it exists in-object and in the fetched file:
-  ID:   <https://qworum.net/data/DoğaArmangil.ttl#id>
+Person's data as it exists in-object and in the fetched files:
+  ID:    <https://qworum.net/data/DoğaArmangil.ttl#id>
   name:  Doğa Armangil
   bio:   EPFL software engineer living in Switzerland. Patent author. Business owner in software.
   bio:   Une bio.
-  bio:   Eine Bio.
   email: <d.armangil@qworum.net>
   email: <doga.armangil@alumni.epfl.ch>
-  email: <a@b.com>
 
-Written the person to an empty N3 store, which now contains:
+Found a person with following data on file:
+  ID:    <https://www.w3.org/People/Berners-Lee/card#i>
+  name:  Timothy Berners-Lee
+  email: <timbl@w3.org>
+
+Adding in-object bio property to person: Une bio.
+
+Person's data as it exists in-object and in the fetched files:
+  ID:    <https://www.w3.org/People/Berners-Lee/card#i>
+  name:  Timothy Berners-Lee
+  bio:   Une bio.
+  email: <timbl@w3.org>
+
+𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑼𝑷𝑫𝑨𝑻𝑬𝑫 𝑷𝑬𝑹𝑺𝑶𝑵𝑺 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑺𝑬𝑴𝑨𝑵𝑻𝑰𝑪 𝑫𝑨𝑻𝑨 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑬𝑹, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:
 
 SemanticData(<https://qworum.net/data/DoğaArmangil.ttl#id> a <http://xmlns.com/foaf/0.1/Person>, <https://schema.org/Person>, <http://sparql.cwrc.ca/ontologies/cwrc#NaturalPerson>, <http://www.w3.org/ns/prov#Agent>;
-    <http://purl.org/vocab/bio/0.1/olb> "Une bio."@fr, "Eine Bio."@de;
-    <http://xmlns.com/foaf/0.1/mbox> <mailto:a@b.com>.
+    <http://purl.org/vocab/bio/0.1/olb> "Une bio.".
+<https://www.w3.org/People/Berners-Lee/card#i> a <http://xmlns.com/foaf/0.1/Person>, <https://schema.org/Person>, <http://sparql.cwrc.ca/ontologies/cwrc#NaturalPerson>, <http://www.w3.org/ns/prov#Agent>;
+    <http://purl.org/vocab/bio/0.1/olb> "Une bio.".
 )
 
-Note that only the in-object data is written.
+𝘕𝘰𝘵𝘦: 𝘰𝘯𝘭𝘺 𝘵𝘩𝘦 𝘪𝘯-𝘰𝘣𝘫𝘦𝘤𝘵 𝘥𝘢𝘵𝘢 𝘪𝘴 𝘸𝘳𝘪𝘵𝘵𝘦𝘯.
 ```
 
 ∎
