@@ -6,7 +6,7 @@ ORM, but for RDF semantic data.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.2/mod.mjs";`
+- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.3/mod.mjs";`
 
 ## Compatibility
 
@@ -34,13 +34,15 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person, SemanticData, I18nString } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.2/mod.mjs";
+import { Person, SemanticData, I18nString } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.3/mod.mjs";
 
 async function demo() {
   const
   urls = [
     new URL('https://qworum.net/data/DoğaArmangil.ttl'),
-    new URL('https://www.w3.org/People/Berners-Lee/card')
+    new URL('https://dbpedia.org/data/Bob_Marley.ttl'),
+    new URL('https://www.w3.org/People/Berners-Lee/card'),
+    new URL('https://dbpedia.org/data/Claude_Shannon.ttl'),
   ],
   sd = new SemanticData();
 
@@ -89,8 +91,10 @@ Sample output for the code above:
 
 ```text
 Fetching: https://qworum.net/data/Do%C4%9FaArmangil.ttl
+Fetching: https://dbpedia.org/data/Bob_Marley.ttl
 Fetching: https://www.w3.org/People/Berners-Lee/card
-Found 2 persons in total.
+Fetching: https://dbpedia.org/data/Claude_Shannon.ttl
+Found 4 persons in total.
 
 Found a person with following data on file:
   ID:    <https://qworum.net/data/DoğaArmangil.ttl#id>
@@ -110,6 +114,17 @@ Person's data as it exists in-object and in the fetched files:
   email: <doga.armangil@alumni.epfl.ch>
 
 Found a person with following data on file:
+  ID:    <http://dbpedia.org/resource/Bob_Marley>
+  name:  Bob Marley
+
+Adding in-object bio property to person: Une bio.
+
+Person's data as it exists in-object and in the fetched files:
+  ID:    <http://dbpedia.org/resource/Bob_Marley>
+  name:  Bob Marley
+  bio:   Une bio.
+
+Found a person with following data on file:
   ID:    <https://www.w3.org/People/Berners-Lee/card#i>
   name:  Timothy Berners-Lee
   email: <timbl@w3.org>
@@ -121,13 +136,39 @@ Person's data as it exists in-object and in the fetched files:
   name:  Timothy Berners-Lee
   bio:   Une bio.
   email: <timbl@w3.org>
+
+Found a person with following data on file:
+  ID:    <http://dbpedia.org/resource/Claude_Shannon>
+  name:  Claude Shannon
+
+Adding in-object bio property to person: Une bio.
+
+Person's data as it exists in-object and in the fetched files:
+  ID:    <http://dbpedia.org/resource/Claude_Shannon>
+  name:  Claude Shannon
+  bio:   Une bio.
 
 𝑾𝑹𝑰𝑻𝑻𝑬𝑵 𝑻𝑯𝑬 𝑼𝑷𝑫𝑨𝑻𝑬𝑫 𝑷𝑬𝑹𝑺𝑶𝑵𝑺 𝑻𝑶 𝑨𝑵 𝑬𝑴𝑷𝑻𝒀 𝑺𝑬𝑴𝑨𝑵𝑻𝑰𝑪 𝑫𝑨𝑻𝑨 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑬𝑹, 𝑾𝑯𝑰𝑪𝑯 𝑵𝑶𝑾 𝑪𝑶𝑵𝑻𝑨𝑰𝑵𝑺:
 
-SemanticData(<https://qworum.net/data/DoğaArmangil.ttl#id> a <http://xmlns.com/foaf/0.1/Person>, <https://schema.org/Person>, <http://sparql.cwrc.ca/ontologies/cwrc#NaturalPerson>, <http://www.w3.org/ns/prov#Agent>;
-    <http://purl.org/vocab/bio/0.1/olb> "Une bio.".
-<https://www.w3.org/People/Berners-Lee/card#i> a <http://xmlns.com/foaf/0.1/Person>, <https://schema.org/Person>, <http://sparql.cwrc.ca/ontologies/cwrc#NaturalPerson>, <http://www.w3.org/ns/prov#Agent>;
-    <http://purl.org/vocab/bio/0.1/olb> "Une bio.".
+SemanticData(
+  @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+  @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+  @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+  @prefix schema: <https://schema.org/>.
+  @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+  @prefix bio: <http://purl.org/vocab/bio/0.1/>.
+  @prefix prov: <http://www.w3.org/ns/prov#>.
+  @prefix cwrc: <http://sparql.cwrc.ca/ontologies/cwrc#>.
+
+  <https://qworum.net/data/DoğaArmangil.ttl#id> a foaf:Person, schema:Person, cwrc:NaturalPerson, prov:Agent;
+      bio:olb "Une bio.".
+  <http://dbpedia.org/resource/Bob_Marley> a foaf:Person, schema:Person, cwrc:NaturalPerson, prov:Agent;
+      bio:olb "Une bio.".
+  <https://www.w3.org/People/Berners-Lee/card#i> a foaf:Person, schema:Person, cwrc:NaturalPerson, prov:Agent;
+      bio:olb "Une bio.".
+  <http://dbpedia.org/resource/Claude_Shannon> a foaf:Person, schema:Person, cwrc:NaturalPerson, prov:Agent;
+      bio:olb "Une bio.".
+
 )
 
 𝘕𝘰𝘵𝘦: 𝘰𝘯𝘭𝘺 𝘵𝘩𝘦 𝘪𝘯-𝘰𝘣𝘫𝘦𝘤𝘵 𝘥𝘢𝘵𝘢 𝘪𝘴 𝘸𝘳𝘪𝘵𝘵𝘦𝘯.

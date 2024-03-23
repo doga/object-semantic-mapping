@@ -182,6 +182,7 @@ class Person extends Model {
     // console.debug(`writeTo`);
     if (!(semanticData instanceof SemanticData))return;
     try {
+      semanticData.addPrefixes(Person.prefixes);
       for (const id of this.idsArray) {
         // console.debug(`id: ${id}`);
         // rdf:type
@@ -214,7 +215,7 @@ class Person extends Model {
     }
   }
 
-  toString = () => `${this.ids}`;
+  // toString = () => `${this.idsArray}`;
 }
 
 export { Person };
