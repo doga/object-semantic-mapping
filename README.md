@@ -1,3 +1,5 @@
+![Qworum logo and name](https://raw.githubusercontent.com/doga/qworum-website/master/build/assets/images/logos/Qworum-logo-and-name.svg "Qworum logo and name")
+
 # object-semantic-mapping
 
 When providing [Qworum](https://qworum.net) APIs that receive or return [semantic data](https://en.wikipedia.org/wiki/Semantic_Web), it is a good idea to provide an OSM (object-semantic mapping) library at the same time, or better yet, reuse an existing OSM.
