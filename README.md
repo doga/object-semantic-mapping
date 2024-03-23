@@ -34,7 +34,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person, SemanticData, I18nString } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.3/mod.mjs";
+import { Person, SemanticData, I18nString } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.4/mod.mjs";
 
 async function demo() {
   const

@@ -111,7 +111,7 @@ class Person extends Model {
       const store = sd.value;
       for (const id of this.idsArray) {
         for (const quad of store.match(id, namedNode(`${foaf}name`), null)) {
-          res.push(I18nString.fromRdf(quad.object));
+          res.push(I18nString.fromRdfLiteral(quad.object));
         }
       }
     }
@@ -128,7 +128,7 @@ class Person extends Model {
       const store = sd.value;
       for (const id of this.idsArray) {
         for (const quad of store.match(id, namedNode(`${bio}olb`), null)) {
-          res.push(I18nString.fromRdf(quad.object));
+          res.push(I18nString.fromRdfLiteral(quad.object));
         }
       }
     }
@@ -195,12 +195,12 @@ class Person extends Model {
 
         // foaf:name
         for (const name of this.names) {
-          const q = quad(namedNode(id), namedNode(`${foaf}name`), literal(name.value, name.lang?.code639_1));
+          const q = quad(namedNode(id), namedNode(`${foaf}name`), literal(name.value, name.lang?.iso639_1));
           semanticData.value.add(q);
         }
         // bio:olb
         for (const olb of this.oneLineBios) {
-          const q = quad(namedNode(id), namedNode(`${bio}olb`), literal(olb.value, olb.lang?.code639_1));
+          const q = quad(namedNode(id), namedNode(`${bio}olb`), literal(olb.value, olb.lang?.iso639_1));
           semanticData.value.add(q);
         }
         // foaf:mbox
