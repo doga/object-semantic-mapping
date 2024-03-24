@@ -15,7 +15,7 @@ This repo can be used as a template for OSM authors.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.4/mod.mjs";`
+- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.5/mod.mjs";`
 
 ## Usage example
 
@@ -40,7 +40,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person, SemanticData, I18nString } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.4/mod.mjs";
+import { Person, SemanticData, I18nString } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.2.5/mod.mjs';
 
 async function demo() {
   const

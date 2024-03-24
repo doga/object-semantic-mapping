@@ -1,16 +1,16 @@
 
-import { 
+import {
   namedNode, literal, quad,
   Store,
   SemanticData,
-  I18nString, Model, 
+  I18nString, Model,
   rdf, rdfs, xsd, schema, foaf, bio, prov, cwrc,
   // cv, country, org, bibo, time, skos, dcterms, cc, cert,
   // qrm,
 } from '../imports.mjs';
 
 const
-a = namedNode(`${rdf}type`);
+  a = namedNode(`${rdf}type`);
 
 class Person extends Model {
   /** @type {string[]} */
@@ -31,14 +31,14 @@ class Person extends Model {
    **/
   static readFrom(semanticData, count) {
     // console.debug(`Person.read`);
-    if(count){
-      if(typeof count !== 'number')throw new TypeError(`not a count`);
+    if (count) {
+      if (typeof count !== 'number') throw new TypeError(`not a count`);
       count = Math.floor(count);
-      if(count < 1)throw new TypeError(`not a count: ${count}`);
+      if (count < 1) throw new TypeError(`not a count: ${count}`);
     }
     if (!(semanticData instanceof Array)) semanticData = [semanticData];
     semanticData = semanticData
-      .map(sd => sd instanceof SemanticData ? sd : null)
+      .map(sd => sd.tag === 'semantic' ? sd : null) // TIP: duck-typing is recommended, as `instanceof` can lead to version compatibility issues with other libraries.
       .filter(sd => sd);
     // console.debug(`#sd: ${semanticData.length}`);
 
@@ -52,9 +52,9 @@ class Person extends Model {
           if (quad.subject.datatype) continue; // ignore literals
           // console.debug(`found person id: ${quad.subject.value}`);
           const
-          id           = quad.subject.value,
-          person       = new Person(id, semanticData),
-          alreadyAdded = persons.find(p => p.isSameAs(person));
+            id = quad.subject.value,
+            person = new Person(id, semanticData),
+            alreadyAdded = persons.find(p => p.isSameAs(person));
 
           // console.debug(`found person.id: ${person.id} (type: ${typeof id})`);
           // console.debug(`found person id: ${id} (type: ${typeof id})`);
@@ -62,7 +62,7 @@ class Person extends Model {
           if (!alreadyAdded) {
             persons.push(person);
             readCount++;
-            if(count && count === readCount)return persons;
+            if (count && count === readCount) return persons;
           }
         }
       }
@@ -81,9 +81,9 @@ class Person extends Model {
 
   constructor(id, semanticData) {
     super(id, semanticData);
-    this.#names       = [];
+    this.#names = [];
     this.#oneLineBios = [];
-    this.#emails      = [];// new Set();
+    this.#emails = [];// new Set();
   }
 
   /** 
@@ -151,9 +151,9 @@ class Person extends Model {
             // mbox is a namedNode
             try {
               const
-              url      = new URL(mbox.value),
-              protocol = url.protocol,
-              email    = url.pathname.trim();
+                url = new URL(mbox.value),
+                protocol = url.protocol,
+                email = url.pathname.trim();
               if (protocol === 'mailto:' && email.length >= 3 && email.indexOf('@') >= 1) { // TODO better email address format verification
                 res.push(email);
               }
@@ -180,7 +180,7 @@ class Person extends Model {
    **/
   writeTo(semanticData) {
     // console.debug(`writeTo`);
-    if (!(semanticData instanceof SemanticData))return;
+    if (!(semanticData.tag === 'semantic')) return;
     try {
       semanticData.addPrefixes(Person.prefixes);
       for (const id of this.idsArray) {
