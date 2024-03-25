@@ -37,8 +37,9 @@ class Person extends Model {
       if (count < 1) throw new TypeError(`not a count: ${count}`);
     }
     if (!(semanticData instanceof Array)) semanticData = [semanticData];
+    // console.debug(`#sd before: ${semanticData.length}`);
     semanticData = semanticData
-      .map(sd => sd.tag === 'semantic' ? sd : null) // TIP: duck-typing is recommended, as `instanceof` can lead to version compatibility issues with other libraries.
+      .map(sd => (sd && sd.getTag && sd.getTag() === 'semantic') ? sd : null) // TIP: duck-typing is recommended, as `instanceof` can lead to version compatibility issues with other libraries.
       .filter(sd => sd);
     // console.debug(`#sd: ${semanticData.length}`);
 
@@ -180,7 +181,7 @@ class Person extends Model {
    **/
   writeTo(semanticData) {
     // console.debug(`writeTo`);
-    if (!(semanticData.tag === 'semantic')) return;
+    if (!(semanticData && semanticData.getTag && semanticData.getTag() === 'semantic')) return;
     try {
       semanticData.addPrefixes(Person.prefixes);
       for (const id of this.idsArray) {
@@ -211,7 +212,6 @@ class Person extends Model {
       }
     } catch (error) {
       console.error(`Error while writing to store: ${error}`);
-      return null;
     }
   }
 

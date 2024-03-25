@@ -15,7 +15,7 @@ This repo can be used as a template for OSM authors.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import { I18nString, Person } from "https://esm.sh/gh/doga/object-semantic-mapping@0.2.5/mod.mjs";`
+- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.0/mod.mjs';`
 
 ## Usage example
 
@@ -30,7 +30,7 @@ deno run \
 ```
 
 <details data-mdrb>
-<summary>Read semantic data from the Web, and manipulate it in-memory.</summary>
+<summary>Example: Generate a product with an ID, write it to a SemanticData object .</summary>
 
 <pre>
 description = '''
@@ -40,7 +40,47 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person, SemanticData, I18nString } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.2.5/mod.mjs';
+import { Product, SemanticData } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.0/mod.mjs';
+
+demo();
+
+function demo() {
+  const 
+  product = new Product('https://shop.example/products/ABC-SH-MO-12345'),
+  sd      = new SemanticData();
+
+  product.productId = 'LG0101A2022051012345';
+  product.writeTo(sd);
+  console.info(`\nThe contents of the SemanticData object, in TriG format:\n\n${sd}`);
+}
+```
+
+Sample output for the code above:
+
+```text
+The contents of the SemanticData object, in TriG format:
+
+SemanticData(
+  @prefix schema: <https://schema.org/>.
+
+  <https://shop.example/products/ABC-SH-MO-12345> a schema:Product;
+      schema:productId "LG0101A2022051012345".
+
+)
+```
+
+<details data-mdrb>
+<summary>Example: Read semantic data from the Web, and manipulate it in-memory.</summary>
+
+<pre>
+description = '''
+Running this example is safe, it will not read or write anything to your filesystem.
+'''
+</pre>
+</details>
+
+```javascript
+import { Person, SemanticData, I18nString } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.0/mod.mjs';
 
 async function demo() {
   const
@@ -66,7 +106,6 @@ async function demo() {
   sd2     = new SemanticData(),
   bio     = new I18nString('Une bio.', 'fr');
 
-  console.info(`Found ${persons.length} persons in total.`);
   for (const person of persons) {
     console.info(`\nFound a person with following data on file:`);
     displayPersonData(person);
