@@ -4,8 +4,8 @@ import {
   Store,
   SemanticData,
   I18nString, Model,
-  rdf, rdfs, xsd, 
-  schema, 
+  rdf, rdfs, xsd,
+  schema,
   // foaf, bio, prov, cwrc,
   // cv, country, org, bibo, time, skos, dcterms, cc, cert,
   // qrm,
@@ -55,11 +55,11 @@ class Product extends Model {
           if (quad.subject.datatype) continue; // ignore literals
           // console.debug(`found product id: ${quad.subject.value}`);
           const
-          id           = quad.subject.value,
-          product      = new Product(id, semanticData),
-          alreadyAdded = products.find(p => p.isSameAs(product));
+            id = quad.subject.value,
+            product = new Product(id, semanticData),
+            alreadyAdded = !!products.find(p => p.isSameAs(product));
 
-          // console.debug(`found product.id: ${product.id} (type: ${typeof id})`);
+          // console.debug(`found product.id: ${product.idsArray} `);
           // console.debug(`found product id: ${id} (type: ${typeof id})`);
           // console.debug(`was already added: ${alreadyAdded}`);
           if (!alreadyAdded) {
@@ -81,7 +81,7 @@ class Product extends Model {
 
   /** @type {(string|undefined)} */
   #productId;
-  
+
   /** 
    * @param {string} id - an IRI 
    * @param {SemanticData} semanticData 
@@ -91,13 +91,32 @@ class Product extends Model {
   }
 
   /** 
-   * @return {(string|undefined)} 
+   * @return {(string|undefined|null)} 
    **/
-  get productId() { return this.#productId; }
+  get productId() { 
+    if(this.#productId)return this.#productId; 
+    // console.debug(`productId not set in-memory, searching in semantic data stores..`);
+    // search in semantic data stores
+    for (const sd of this.semanticData) {
+      const store = sd.value;
+      for (const id of this.idsArray) {
+        // console.debug(`searching productId for subject id: ${id}`);
+        for (const quad of store.match(id, namedNode(`${schema}productId`), null)) {
+          if (typeof quad.object === 'object' && quad.object.datatype) {
+            // console.debug(`found literal object (datatype: ${quad.object.datatype.value}): ${quad.object.value}`);
+            if (quad.object.datatype.value === `${xsd}string`) {
+              return quad.object.value;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
 
-  set productId(value) { 
-    if(!value)return;
-    this.#productId = `${value}`; 
+  set productId(value) {
+    if (!value) return;
+    this.#productId = `${value}`;
   }
 
   /** 

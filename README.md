@@ -15,7 +15,7 @@ This repo can be used as a template for OSM authors.
 
 This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
 
-- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.0/mod.mjs';`
+- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.1/mod.mjs';`
 
 ## Usage example
 
@@ -40,12 +40,12 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Product, SemanticData } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.0/mod.mjs';
+import { Product, SemanticData } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.1/mod.mjs';
 
 demo();
 
 function demo() {
-  const 
+  let 
   product = new Product('https://shop.example/products/ABC-SH-MO-12345'),
   sd      = new SemanticData();
 
@@ -54,6 +54,10 @@ function demo() {
   console.info(`\nWriting product info to an empty SemanticData object.`);
   product.writeTo(sd);
   console.info(`\nThe contents of the SemanticData object, in TriG format:\n\n${sd}`);
+  console.info(`\nReading the product info from the SemanticData object.`);
+  product = Product.readFrom(sd)[0];
+  console.info(`\nFound product with productId ${product?.productId}`);
+
 }
 ```
 
@@ -82,7 +86,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person, SemanticData, I18nString } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.0/mod.mjs';
+import { Person, SemanticData, I18nString } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.3.1/mod.mjs';
 
 async function demo() {
   const
