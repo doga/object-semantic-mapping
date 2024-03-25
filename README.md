@@ -50,6 +50,8 @@ function demo() {
   sd      = new SemanticData();
 
   product.productId = 'LG0101A2022051012345';
+  console.info(`\nCreated product info.`);
+  console.info(`\nWriting product info to an empty SemanticData object.`);
   product.writeTo(sd);
   console.info(`\nThe contents of the SemanticData object, in TriG format:\n\n${sd}`);
 }
