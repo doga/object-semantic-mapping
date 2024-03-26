@@ -2,7 +2,7 @@ import {
   N3,
   QworumScript, 
   I18nString, Model, 
-} from "https://esm.sh/gh/doga/qworum-for-web-pages@1.5.3/mod.mjs";
+} from "https://esm.sh/gh/doga/qworum-for-web-pages@1.5.7/mod.mjs";
 
 const 
 { DataFactory } = N3,
