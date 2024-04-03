@@ -30,6 +30,7 @@ class Product extends Model {
    * @param {(SemanticData|SemanticData[])} semanticData
    * @param {number} count - max number of products to read
    * @return {Product[]} 
+   * @throws {TypeError}
    **/
   static readFrom(semanticData, count) {
     // console.debug(`Product.read`);

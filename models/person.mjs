@@ -28,6 +28,7 @@ class Person extends Model {
    * @param {(SemanticData|SemanticData[])} semanticData
    * @param {number} count - max number of persons to read
    * @return {Person[]} 
+   * @throws {TypeError}
    **/
   static readFrom(semanticData, count) {
     // console.debug(`Person.read`);
