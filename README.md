@@ -19,7 +19,7 @@ This library is an ECMAScript module that does not have any dependencies. Import
 
 ## Usage example
 
-_Tip: Run the example below by typing this in your terminal (requires Deno):_
+_Tip: Run the examples below by typing this in your terminal (requires Deno):_
 
 ```shell
 deno run \
@@ -30,7 +30,7 @@ deno run \
 ```
 
 <details data-mdrb>
-<summary>Example: Read persons .</summary>
+<summary>Example: Create a model instance, and write it to an RDF dataset.</summary>
 
 <pre>
 description = '''
@@ -40,36 +40,86 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
+import { Model, IRI } from './mod.mjs';
 import * as N3 from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
-import { Model } from './mod.mjs';
 // import { Model } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.4.0/mod.mjs';
-const {foaf} = Model.wellKnownPrefixes;
-
-async function demo() {
-      // console.log(`${foaf}Person`);
-  const
-  store        = new N3.Store(),
-  url          = new URL('https://qworum.net/data/DoğaArmangil.ttl'),
-  response     = await fetch(url),
-  text         = await response.text(),
-  parser       = new N3.Parser({baseIRI: `${url}`}),
-  parseHandler = (error, quad, prefixes) => {if (quad){store.add(quad);}},
-  dataset      = await parser.parse(text, parseHandler),
-  persons      = await Model.readFrom(store, {types: new URL(`${foaf}Person`)});
-
-  // console.log(`store:`, store);
-  console.info(`persons[0]: ${persons[0]}`);
-  // console.info(`persons[0]?.id: `, persons[0]?.id);
-
-}
+const {schema} = Model.wellKnownPrefixes;
 
 await demo();
+
+async function demo() {
+  console.info(`Creating new model instance ..`);
+  const
+  modelId   = IRI.parse('urn:isbn:0451450523'),
+  modelType = IRI.parse(`${schema}Product`),
+  model     = new Model(modelId, {types: modelType});
+
+  console.info(`\nNew model instance:\n${model}`);
+
+  console.info(`\nWriting the model instance to an empty dataset ..`);
+  const store = new N3.Store();
+  model.writeTo(store);
+
+  const writer = new N3.Writer();
+  for (const quad of store) writer.addQuad(quad);
+  writer.end((err, res) => {
+    if (!err) console.info(`\nUpdated dataset:\n${res}`);
+  });
+
+
+}
 ```
 
 Sample output for the code above:
 
 ```text
+<https://qworum.net/data/Do%C4%9FaArmangil.ttl#id> a <http://xmlns.com/foaf/0.1/Person> .
+```
 
+<details data-mdrb>
+<summary>Example: Read model instances from a Turtle file.</summary>
+
+<pre>
+description = '''
+Running this example is safe, it will not read or write anything to your filesystem.
+'''
+</pre>
+</details>
+
+```javascript
+import { Model, IRI } from './mod.mjs';
+import * as N3 from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
+// import { Model } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.4.0/mod.mjs';
+const {foaf, schema, person} = Model.wellKnownPrefixes;
+
+await demo();
+
+async function demo() {
+  const
+  store        = new N3.Store(),
+  url          = IRI.parse('https://qworum.net/data/DoğaArmangil.ttl'),
+  response     = await fetch(url),
+  text         = await response.text(),
+  parser       = new N3.Parser({baseIRI: `${url}`}),
+  parseHandler = (error, quad, prefixes) => {if (quad){store.add(quad);}},
+  dataset      = await parser.parse(text, parseHandler),
+  types     = [
+    `${foaf}Person`, 
+    `${schema}Person`,
+    `${person}Person`,
+  ].map(t => IRI.parse(t)),
+  models = await Model.readFrom(store, {types});
+
+  for (const model of models){
+    console.info(`${model}`);
+  }
+}
+```
+
+Sample output for the code above:
+
+```text
+<https://qworum.net/data/Do%C4%9FaArmangil.ttl#id> a <https://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> .
 ```
 
 ∎
