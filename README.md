@@ -6,7 +6,7 @@ This ES6 JavaScript library defines a base model for creating a model instance, 
 
 Applications would normally use subclasses that extend the base `Model` class. To illustrate how this is done, this library contains a `Person` class that extends the base model.
 
-This library is intended as a solid foundation for the RDF community to build OSM models on, and for making RDF easy to manipulate by applications.
+This library is intended as a solid foundation for building OSM models on, and for making RDF easy to manipulate by applications.
 
 ## How to import this library
 
