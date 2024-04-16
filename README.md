@@ -2,7 +2,7 @@
 
 Object-semantic mapping (OSM) is like [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping), but for [RDF](https://www.w3.org/TR/rdf-primer/).
 
-This ES6 JavaScript library defines a base model for creating a model instance, and for reading from and writing to [DatasetCore](https://rdf.js.org/dataset-spec/#datasetcore-interface)-compliant datasets.
+This ES6 JavaScript library defines a base model for creating a model instance, and for reading models from and writing models to [DatasetCore](https://rdf.js.org/dataset-spec/#datasetcore-interface)-compliant datasets.
 
 Applications would normally use subclasses that extend the base `Model` class. To illustrate how this is done, this library contains a `Person` class that extends the base model.
 
