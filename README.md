@@ -1,3 +1,7 @@
+<p align="left">
+<a href="https://qworum.net" target="_blank" rel="noreferrer"><img src="https://github.com/doga/doga/raw/main/logos/Qworum-logo.svg" height="85" alt="Qworum" /></a>
+</p>
+
 # Object-semantic mapping
 
 Object-semantic mapping (OSM) is like [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping), but for [RDF](https://www.w3.org/TR/rdf-primer/).
