@@ -1,23 +1,18 @@
-![Qworum logo and name](https://raw.githubusercontent.com/doga/qworum-website/master/build/assets/images/logos/Qworum-logo-and-name.svg "Qworum logo and name")
+# Object-semantic mapping
 
-# Object-semantic mapping for Qworum
+Object-semantic mapping (OSM) is like [ORM](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping), but for [RDF](https://www.w3.org/TR/rdf-primer/).
 
-When providing [Qworum](https://qworum.net) APIs that receive or return [semantic data](https://en.wikipedia.org/wiki/Semantic_Web), it is a good idea to provide an OSM (object-semantic mapping) library at the same time, or better yet, reuse an existing OSM.
+This ES6 JavaScript library defines a base model for creating a model instance, and for reading from and writing to [DatasetCore](https://rdf.js.org/dataset-spec/#datasetcore-interface)-compliant datasets.
 
-Why Qworum API providers may wish to provide an OSM:
+Applications would normally use subclasses that extend the base `Model` class. To illustrate how this is done, this library contains a `Person` class that extends the base model.
 
-- implementing Qworum APIs becomes much easier.
-- consuming Qworum APIs becomes much easier.
+This library is intended as a solid foundation for the RDF community to build OSM models on, and for making RDF easy to manipulate by applications.
 
-This repo can be used as a template for OSM authors.
+## How to import this library
 
-## How to import this library into your frontend code
+- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@1.0.0/mod.mjs';`
 
-This library is an ECMAScript module that does not have any dependencies. Importing this library is simple:
-
-- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@0.4.0/mod.mjs';`
-
-## Usage example
+## Usage examples
 
 _Tip: Run the examples below by typing this in your terminal (requires Deno):_
 
@@ -40,9 +35,8 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Model, IRI } from './mod.mjs';
-import * as N3 from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
-// import { Model } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.4.0/mod.mjs';
+import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.0.0/mod.mjs';
+import { Store, Writer } from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
 const {schema} = Model.wellKnownPrefixes;
 
 await demo();
@@ -54,30 +48,33 @@ async function demo() {
   modelType = IRI.parse(`${schema}Product`),
   model     = new Model(modelId, {types: modelType});
 
-  console.info(`\nNew model instance:\n${model}`);
+  console.info(`${model}`);
 
   console.info(`\nWriting the model instance to an empty dataset ..`);
-  const store = new N3.Store();
+  const store = new Store();
   model.writeTo(store);
 
-  const writer = new N3.Writer();
+  // Non-standard way of printing out the dataset
+  const writer = new Writer();
   for (const quad of store) writer.addQuad(quad);
-  writer.end((err, res) => {
-    if (!err) console.info(`\nUpdated dataset:\n${res}`);
-  });
-
-
+  writer.end((err, res) => {if (!err) console.info(`\nUpdated dataset:\n${res}`);});
 }
 ```
 
 Sample output for the code above:
 
 ```text
-<https://qworum.net/data/Do%C4%9FaArmangil.ttl#id> a <http://xmlns.com/foaf/0.1/Person> .
+Creating new model instance ..
+<urn:isbn:0451450523> a <https://schema.org/Product>.
+
+Writing the model instance to an empty dataset ..
+
+Updated dataset:
+<urn:isbn:0451450523> a <https://schema.org/Product>.
 ```
 
 <details data-mdrb>
-<summary>Example: Read model instances from a Turtle file.</summary>
+<summary>Example: Read model instances from a dataset, based on Turtle file.</summary>
 
 <pre>
 description = '''
@@ -87,39 +84,111 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Model, IRI } from './mod.mjs';
-import * as N3 from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
-// import { Model } from 'https://esm.sh/gh/doga/object-semantic-mapping@0.4.0/mod.mjs';
-const {foaf, schema, person} = Model.wellKnownPrefixes;
+import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.0.0/mod.mjs';
+import { Store, Parser } from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
+const { org } = Model.wellKnownPrefixes;
 
 await demo();
 
 async function demo() {
+  // build the dataset from a Turtle file
   const
-  store        = new N3.Store(),
-  url          = IRI.parse('https://qworum.net/data/DoğaArmangil.ttl'),
+  url          = IRI.parse('https://qworum.net/data/org.ttl'),
   response     = await fetch(url),
   text         = await response.text(),
-  parser       = new N3.Parser({baseIRI: `${url}`}),
-  parseHandler = (error, quad, prefixes) => {if (quad){store.add(quad);}},
-  dataset      = await parser.parse(text, parseHandler),
-  types     = [
-    `${foaf}Person`, 
-    `${schema}Person`,
-    `${person}Person`,
-  ].map(t => IRI.parse(t)),
-  models = await Model.readFrom(store, {types});
+  store        = new Store(),
+  parser       = new Parser({baseIRI: `${url}`}),
+  parseHandler = (error, quad, prefixes) => {if (quad) store.add(quad);};
 
-  for (const model of models){
-    console.info(`${model}`);
-  }
+  await parser.parse(text, parseHandler);
+
+  // read the models from the dataset
+  const models = await Model.readFrom(store, {types: IRI.parse(`${org}Organization`)});
+  for (const model of models) console.info(`${model}`);
 }
 ```
 
 Sample output for the code above:
 
 ```text
-<https://qworum.net/data/Do%C4%9FaArmangil.ttl#id> a <https://schema.org/Person>, <http://xmlns.com/foaf/0.1/Person> .
+<https://qworum.net/data/org.ttl#id> a <http://www.w3.org/ns/org#Organization>.
+```
+
+<details data-mdrb>
+<summary>Example: Read persons from a dataset which is sourced from a Turtle file.</summary>
+
+<pre>
+description = '''
+Running this example is safe, it will not read or write anything to your filesystem.
+'''
+</pre>
+</details>
+
+```javascript
+import { Person, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.0.0/mod.mjs';
+import { Store, Writer, Parser } from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
+
+await demo();
+
+async function demo() {
+  // build the dataset from a Turtle file
+  const
+  url          = IRI.parse('https://qworum.net/data/DoğaArmangil.ttl'),
+  response     = await fetch(url),
+  text         = await response.text(),
+  store        = new Store(),
+  parser       = new Parser({baseIRI: `${url}`}),
+  parseHandler = (error, quad, prefixes) => {if (quad) store.add(quad);};
+  await parser.parse(text, parseHandler);
+
+  // read the persons from the dataset
+  const persons = await Person.readFrom(store);
+
+  for (const person of persons){
+    console.info(`\n${person.id}`);
+
+    // add in-memory data
+    person.emails.add('an@email.example');
+
+    const 
+    names  = await person.getNames(),
+    olbs   = await person.getOneLineBios(),
+    emails = await person.getEmails();
+
+    for (const name  of names)              console.info(`  name: ${name}`);
+    for (const olb   of olbs)               console.info(`  one-line bio: ${olb}`);
+    for (const email of emails)             console.info(`  email: ${email}`);
+    for (const name  of person.names)       console.info(`  in-memory name: ${name}`);
+    for (const olb   of person.oneLineBios) console.info(`  in-memory one-line bio: ${olb}`);
+    for (const email of person.emails)      console.info(`  in-memory email: ${email}`);
+  }
+
+  console.info(`\nWriting the persons' ID, type(s) and in-memory data to an empty dataset ..`);
+  const store2 = new Store();
+  for(const person of persons) await person.writeTo(store2);
+
+  // Non-standard way of printing out the dataset
+  const writer = new Writer();
+  for (const quad of store2) writer.addQuad(quad);
+  writer.end((err, res) => {if (!err) console.info(`\nUpdated dataset:\n${res}`);});
+}
+```
+
+Sample output for the code above:
+
+```text
+https://qworum.net/data/DoğaArmangil.ttl#id
+  name: Doğa Armangil
+  one-line bio: "EPFL software engineer living in Switzerland. Patent author. Business owner in software."@en
+  email: d.armangil@qworum.net
+  email: doga.armangil@alumni.epfl.ch
+  in-memory email: an@email.example
+
+Writing the persons' ID, type(s) and in-memory data to an empty dataset ..
+
+Updated dataset:
+<https://qworum.net/data/DoğaArmangil.ttl#id> a <http://xmlns.com/foaf/0.1/Person>, <https://schema.org/Person>, <http://sparql.cwrc.ca/ontologies/cwrc#NaturalPerson>, <http://www.w3.org/ns/prov#Agent>;
+    <http://xmlns.com/foaf/0.1/mbox> <mailto:an@email.example>.
 ```
 
 ∎
