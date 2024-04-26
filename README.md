@@ -78,7 +78,7 @@ Updated dataset:
 ```
 
 <details data-mdrb>
-<summary>Example: Read model instances from a dataset, based on Turtle file.</summary>
+<summary>Example: Read model instances from a dataset sourced from a Turtle file.</summary>
 
 <pre>
 description = '''
@@ -119,7 +119,7 @@ Sample output for the code above:
 ```
 
 <details data-mdrb>
-<summary>Example: Read persons from a dataset which is sourced from a Turtle file.</summary>
+<summary>Example: Read persons from a dataset sourced from a Turtle file.</summary>
 
 <pre>
 description = '''
