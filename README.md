@@ -40,7 +40,7 @@ Running this example is safe, it will not read or write anything to your filesys
 
 ```javascript
 import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';
-import { Store, Writer } from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
+import { Store, Writer } from 'https://esm.sh/gh/doga/N3@1.18.2/mod.mjs';
 const {schema} = Model.wellKnownPrefixes;
 
 await demo();
@@ -89,7 +89,7 @@ Running this example is safe, it will not read or write anything to your filesys
 
 ```javascript
 import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';
-import { Store, Parser } from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
+import { Store, Parser } from 'https://esm.sh/gh/doga/N3@1.18.2/mod.mjs';
 const { org } = Model.wellKnownPrefixes;
 
 await demo();
@@ -130,7 +130,7 @@ Running this example is safe, it will not read or write anything to your filesys
 
 ```javascript
 import { Person, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';
-import { Store, Writer, Parser } from 'https://esm.sh/gh/doga/N3@1.18.0/mod.mjs';
+import { Store, Writer, Parser } from 'https://esm.sh/gh/doga/N3@1.18.2/mod.mjs';
 
 await demo();
 
