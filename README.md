@@ -12,6 +12,10 @@ Applications would normally use subclasses that extend the base `Model` class. T
 
 This library is intended as a solid foundation for building OSM models on, and for making RDF easy to manipulate by applications.
 
+## Some projects that are using this library
+
+[Template for a Qworum application that uses RDF data](https://github.com/doga/qworum-application-template-with-semantic-data).
+
 ## How to import this library
 
 - `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';`
