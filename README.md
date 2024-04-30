@@ -18,7 +18,7 @@ This library is intended as a solid foundation for building OSM models on, and f
 
 ## How to import this library
 
-- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';`
+- `import * as OSM from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.2/mod.mjs';`
 
 ## Usage examples
 
@@ -43,7 +43,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';
+import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.2/mod.mjs';
 import { Store, Writer } from 'https://esm.sh/gh/doga/N3@1.18.2/mod.mjs';
 const {schema} = Model.wellKnownPrefixes;
 
@@ -92,7 +92,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';
+import { Model, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.2/mod.mjs';
 import { Store, Parser } from 'https://esm.sh/gh/doga/N3@1.18.2/mod.mjs';
 const { org } = Model.wellKnownPrefixes;
 
@@ -133,7 +133,7 @@ Running this example is safe, it will not read or write anything to your filesys
 </details>
 
 ```javascript
-import { Person, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.1/mod.mjs';
+import { Person, IRI } from 'https://esm.sh/gh/doga/object-semantic-mapping@1.1.2/mod.mjs';
 import { Store, Writer, Parser } from 'https://esm.sh/gh/doga/N3@1.18.2/mod.mjs';
 
 await demo();
