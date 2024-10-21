@@ -22,14 +22,14 @@ This library is intended as a solid foundation for building OSM models on, and f
 
 ## Usage examples
 
-_Tip: Run the examples below by typing this in your terminal (requires Deno):_
+_Tip: Run the examples below by typing this in your terminal (requires [Deno](https://deno.com/) 2+):_
 
 ```shell
 deno run \
   --allow-net --allow-run --allow-env --allow-read \
-  https://deno.land/x/mdrb@2.0.0/mod.ts \
-  --dax=false --mode=isolated \
-  https://raw.githubusercontent.com/doga/object-semantic-mapping/main/README.md
+  jsr:@andrewbrey/mdrb@3.0.4 \
+  --dax=false \
+  https://raw.githubusercontent.com/doga/object-semantic-mapping/master/README.md
 ```
 
 <details data-mdrb>
@@ -37,7 +37,7 @@ deno run \
 
 <pre>
 description = '''
-Running this example is safe, it will not read or write anything to your filesystem.
+Running this code is safe.
 '''
 </pre>
 </details>
@@ -86,7 +86,7 @@ Updated dataset:
 
 <pre>
 description = '''
-Running this example is safe, it will not read or write anything to your filesystem.
+Running this code is safe.
 '''
 </pre>
 </details>
@@ -127,7 +127,7 @@ Sample output for the code above:
 
 <pre>
 description = '''
-Running this example is safe, it will not read or write anything to your filesystem.
+Running this code is safe.
 '''
 </pre>
 </details>
